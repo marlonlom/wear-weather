@@ -6,66 +6,32 @@
 
 package dev.marlonlom.codelabs.wear_weather.presentation
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.wear.compose.material.MaterialTheme
-import androidx.wear.compose.material.Text
-import dev.marlonlom.codelabs.wear_weather.R
+import androidx.datastore.preferences.preferencesDataStore
+import dev.marlonlom.codelabs.wear_weather.presentation.features.location.UserLocationViewModel
+import dev.marlonlom.codelabs.wear_weather.presentation.features.main.MainScaffold
 import dev.marlonlom.codelabs.wear_weather.presentation.theme.WearWeatherTheme
 
+private val Context.dataStore by preferencesDataStore("wear_weather_preferences")
+
 class MainActivity : ComponentActivity() {
+
+  private val userLocationViewModel by viewModels<UserLocationViewModel> {
+    UserLocationViewModel.factory(dataStore)
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     installSplashScreen()
     super.onCreate(savedInstanceState)
     setContent {
-      WearApp("Android")
+      WearWeatherTheme {
+        MainScaffold(userLocationViewModel)
+      }
     }
   }
-}
-
-@Composable
-fun WearApp(greetingName: String) {
-  WearWeatherTheme {
-    /* If you have enough items in your list, use [ScalingLazyColumn] which is an optimized
-     * version of LazyColumn for wear devices with some added features. For more information,
-     * see d.android.com/wear/compose.
-     */
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colors.background),
-      verticalArrangement = Arrangement.Center
-    ) {
-      Greeting(greetingName = greetingName)
-    }
-  }
-}
-
-@Composable
-fun Greeting(greetingName: String) {
-  Text(
-    modifier = Modifier.fillMaxWidth(),
-    textAlign = TextAlign.Center,
-    color = MaterialTheme.colors.primary,
-    text = stringResource(R.string.hello_world, greetingName)
-  )
-}
-
-@Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
-@Composable
-fun DefaultPreview() {
-  WearApp("Preview Android")
 }

@@ -64,6 +64,8 @@ dependencies {
   implementation("androidx.wear.compose:compose-foundation:1.2.0")
   implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
   implementation("androidx.activity:activity-compose:1.8.0")
+  implementation("androidx.wear:wear-tooling-preview:1.0.0-alpha01")
+  implementation("androidx.datastore:datastore-preferences:1.0.0")
   androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
   androidTestImplementation("androidx.compose.ui:ui-test-junit4")
   debugImplementation("androidx.compose.ui:ui-tooling")

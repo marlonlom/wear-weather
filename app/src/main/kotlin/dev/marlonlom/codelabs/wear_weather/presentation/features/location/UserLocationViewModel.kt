@@ -7,10 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dev.marlonlom.codelabs.wear_weather.presentation.preferences.UserPreferencesRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -18,27 +19,26 @@ class UserLocationViewModel(
   private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
+  private val _failuresState = MutableStateFlow<Throwable?>(null)
+
   val uiState: StateFlow<UserLocationState> = userPreferencesRepository.userPreferencesFlow
     .catch { cause: Throwable ->
       Log.d("[UserLocationViewModel]", "error=$cause")
       UserLocationState.Failed(cause)
     }
-    .map { userLocation ->
-      when (userLocation) {
-        null -> {
-          UserLocationState.None
+    .combineTransform<UserLocation?, Throwable?, UserLocationState>(
+      flow = _failuresState,
+      transform = { userLocation: UserLocation?, failure: Throwable? ->
+        if (failure != null) {
+          emit(UserLocationState.Failed(failure))
+        } else if (userLocation == null) {
+          emit(UserLocationState.None)
+        } else if (userLocation.isOutOfBoundaries) {
+          emit(UserLocationState.Failed(LocationOutOfBoundariesException()))
+        } else {
+          emit(UserLocationState.Located(userLocation))
         }
-
-        else -> {
-          Log.d("[UserLocationViewModel]", "userLocation.isOutOfBoundaries=${userLocation.isOutOfBoundaries}")
-          if (userLocation.isOutOfBoundaries) {
-            UserLocationState.Failed(LocationOutOfBoundariesException())
-          } else {
-            UserLocationState.Located(userLocation)
-          }
-        }
-      }
-    }.stateIn(
+      }).stateIn(
       scope = viewModelScope,
       started = SharingStarted.Eagerly,
       initialValue = UserLocationState.None
@@ -46,7 +46,14 @@ class UserLocationViewModel(
 
   fun updateLocation(userLocation: UserLocation) {
     viewModelScope.launch {
+      _failuresState.emit(null)
       userPreferencesRepository.updateLocation(userLocation)
+    }
+  }
+
+  fun updateWithFailure(failure: Throwable) {
+    viewModelScope.launch {
+      _failuresState.emit(failure)
     }
   }
 

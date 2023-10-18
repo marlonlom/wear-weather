@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -21,15 +20,13 @@ import androidx.wear.compose.material.TimeText
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
 import dev.marlonlom.codelabs.wear_weather.presentation.features.location.AskingCurrentLocationScreen
-import dev.marlonlom.codelabs.wear_weather.presentation.features.location.UserLocation
 import dev.marlonlom.codelabs.wear_weather.presentation.features.location.UserLocationState
-import dev.marlonlom.codelabs.wear_weather.presentation.features.location.UserLocationViewModel
 
 @Composable
 fun MainScaffold(
-  userLocationViewModel: UserLocationViewModel
+  userLocationState: UserLocationState,
+  requestLocationPermissionAction: () -> Unit
 ) {
-  val userLocationState = userLocationViewModel.uiState.collectAsState()
   val scalingLazyListState: ScalingLazyListState = rememberScalingLazyListState()
   Scaffold(
     timeText = { TimeText() },
@@ -45,14 +42,14 @@ fun MainScaffold(
       verticalArrangement = Arrangement.Center,
       state = scalingLazyListState
     ) {
-      Log.d("[MainScaffold]", "userLocationState=${userLocationState.value}")
-      when (userLocationState.value) {
+      Log.d("[MainScaffold]", "userLocationState=${userLocationState}")
+      when (userLocationState) {
         UserLocationState.None -> {
           item {
             AskingCurrentLocationScreen(
               onAskLocationPermissionButtonClicked = {
                 Log.d("[MainScaffold]", "onAskLocationPermissionButtonClicked")
-                userLocationViewModel.updateLocation(UserLocation(1.0, 20.0))
+                requestLocationPermissionAction()
               }
             )
           }
@@ -66,8 +63,7 @@ fun MainScaffold(
 
         is UserLocationState.Located -> {
           item {
-            val userLocation = userLocationState.value as UserLocationState.Located
-            Text(text = "Success location: ${userLocation.userLocation}")
+            Text(text = "Success location: ${userLocationState.userLocation}")
           }
         }
       }

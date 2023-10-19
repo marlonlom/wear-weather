@@ -26,7 +26,7 @@ class UserLocationViewModel(
       Log.d("[UserLocationViewModel]", "error=$cause")
       UserLocationState.Failed(cause)
     }
-    .combineTransform<UserLocation?, Throwable?, UserLocationState>(
+    .combineTransform(
       flow = _failuresState,
       transform = { userLocation: UserLocation?, failure: Throwable? ->
         if (failure != null) {

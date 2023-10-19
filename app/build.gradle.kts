@@ -66,6 +66,7 @@ dependencies {
   implementation("androidx.activity:activity-compose:1.8.0")
   implementation("androidx.wear:wear-tooling-preview:1.0.0-alpha01")
   implementation("androidx.datastore:datastore-preferences:1.0.0")
+  implementation("com.google.android.gms:play-services-location:21.0.1")
   androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
   androidTestImplementation("androidx.compose.ui:ui-test-junit4")
   debugImplementation("androidx.compose.ui:ui-tooling")

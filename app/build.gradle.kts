@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
   id("com.android.application")
   id("org.jetbrains.kotlin.android")
@@ -18,6 +20,10 @@ android {
       useSupportLibrary = true
     }
 
+    gradleLocalProperties(rootDir).apply {
+      buildConfigField("String", "WEATHER_API_BASE_URL", getProperty("WEATHER_API_BASE_URL"))
+      buildConfigField("String", "WEATHER_API_KEY", getProperty("WEATHER_API_KEY"))
+    }
   }
 
   buildTypes {
@@ -39,6 +45,7 @@ android {
   }
   buildFeatures {
     compose = true
+    buildConfig = true
   }
   composeOptions {
     kotlinCompilerExtensionVersion = "1.4.3"
@@ -67,6 +74,8 @@ dependencies {
   implementation("androidx.wear:wear-tooling-preview:1.0.0-alpha01")
   implementation("androidx.datastore:datastore-preferences:1.0.0")
   implementation("com.google.android.gms:play-services-location:21.0.1")
+  implementation("com.squareup.retrofit2:retrofit:2.9.0")
+  implementation("com.squareup.retrofit2:converter-gson:2.9.0")
   androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
   androidTestImplementation("androidx.compose.ui:ui-test-junit4")
   debugImplementation("androidx.compose.ui:ui-tooling")

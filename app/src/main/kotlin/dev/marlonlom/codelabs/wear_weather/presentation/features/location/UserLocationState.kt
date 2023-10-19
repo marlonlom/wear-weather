@@ -17,4 +17,7 @@ data class UserLocation(
 }
 
 class LocationOutOfBoundariesException : Exception()
+
 class LocationPermissionDeniedException : Exception()
+
+class LocationNotFoundException : Exception()

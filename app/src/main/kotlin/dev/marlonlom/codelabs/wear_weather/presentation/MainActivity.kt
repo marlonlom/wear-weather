@@ -33,11 +33,16 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import dev.marlonlom.codelabs.wear_weather.presentation.features.location.LocationNotFoundException
 import dev.marlonlom.codelabs.wear_weather.presentation.features.location.LocationPermissionDeniedException
 import dev.marlonlom.codelabs.wear_weather.presentation.features.location.UserLocation
 import dev.marlonlom.codelabs.wear_weather.presentation.features.location.UserLocationState
 import dev.marlonlom.codelabs.wear_weather.presentation.features.location.UserLocationViewModel
 import dev.marlonlom.codelabs.wear_weather.presentation.features.main.MainScaffold
+import dev.marlonlom.codelabs.wear_weather.presentation.network.CurrentWeatherViewModel
+import dev.marlonlom.codelabs.wear_weather.presentation.network.WeatherApiClient
+import dev.marlonlom.codelabs.wear_weather.presentation.network.WeatherApiRepository
+import dev.marlonlom.codelabs.wear_weather.presentation.network.WeatherApiUiState
 import dev.marlonlom.codelabs.wear_weather.presentation.theme.WearWeatherTheme
 
 private val Context.dataStore by preferencesDataStore("wear_weather_preferences")
@@ -50,6 +55,12 @@ class MainActivity : ComponentActivity() {
 
   private val userLocationViewModel by viewModels<UserLocationViewModel> {
     UserLocationViewModel.factory(dataStore)
+  }
+
+  private val currentWeatherViewModel by viewModels<CurrentWeatherViewModel> {
+    CurrentWeatherViewModel.factory(
+      WeatherApiRepository(WeatherApiClient.getInstance())
+    )
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,10 +109,16 @@ class MainActivity : ComponentActivity() {
         })
 
       val userLocationState: State<UserLocationState> = userLocationViewModel.uiState.collectAsState()
+      val weatherDataState: State<WeatherApiUiState> = currentWeatherViewModel.weatherData.collectAsState()
+
+      val currentLocationData = userLocationState.value
+      if (currentLocationData is UserLocationState.Located) {
+        currentWeatherViewModel.updateWeatherDataByLocation(currentLocationData.userLocation)
+      }
 
       WearWeatherTheme {
         MainScaffold(
-          userLocationState = userLocationState.value,
+          userLocationState = currentLocationData,
           requestLocationPermissionAction = {
             Log.d(
               "[MainActivity]",
@@ -112,7 +129,8 @@ class MainActivity : ComponentActivity() {
             } else {
               locationPermissionLauncher.launch(locationPermissions)
             }
-          }
+          },
+          weatherDataState = weatherDataState.value,
         )
       }
 
@@ -138,12 +156,9 @@ class MainActivity : ComponentActivity() {
   private fun getCurrentLocation() {
     handleCurrentLocation(
       onLocationFound = { location ->
-        userLocationViewModel.updateLocation(
-          UserLocation(
-            latitude = location.latitude,
-            longitude = location.longitude
-          )
-        )
+        val userLocation = UserLocation(location.latitude, location.longitude)
+        userLocationViewModel.updateLocation(userLocation)
+        currentWeatherViewModel.updateWeatherDataByLocation(userLocation)
       },
       onFailure = {
         Log.d(
@@ -166,11 +181,11 @@ class MainActivity : ComponentActivity() {
           if (it != null) {
             onLocationFound(it)
           } else {
-            onFailure(NullPointerException())
+            onFailure(LocationNotFoundException())
           }
         }
-        .addOnFailureListener {
-          onFailure(it)
+        .addOnFailureListener { exception ->
+          onFailure(exception)
         }
     }
   }

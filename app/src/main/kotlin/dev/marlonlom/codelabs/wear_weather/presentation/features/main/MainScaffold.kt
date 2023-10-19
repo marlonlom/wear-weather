@@ -21,11 +21,13 @@ import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
 import dev.marlonlom.codelabs.wear_weather.presentation.features.location.AskingCurrentLocationScreen
 import dev.marlonlom.codelabs.wear_weather.presentation.features.location.UserLocationState
+import dev.marlonlom.codelabs.wear_weather.presentation.network.WeatherApiUiState
 
 @Composable
 fun MainScaffold(
   userLocationState: UserLocationState,
-  requestLocationPermissionAction: () -> Unit
+  requestLocationPermissionAction: () -> Unit,
+  weatherDataState: WeatherApiUiState
 ) {
   val scalingLazyListState: ScalingLazyListState = rememberScalingLazyListState()
   Scaffold(
@@ -63,6 +65,7 @@ fun MainScaffold(
 
         is UserLocationState.Located -> {
           item {
+            Log.d("[MainScaffold]", "weatherDataState=$weatherDataState")
             Text(text = "Success location: ${userLocationState.userLocation}")
           }
         }

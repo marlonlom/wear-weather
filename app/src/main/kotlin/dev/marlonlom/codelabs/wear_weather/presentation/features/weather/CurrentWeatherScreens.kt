@@ -100,7 +100,7 @@ fun ScalingLazyListScope.weatherDetailsBox(
     WeatherDetailOutlinedChip(
       iconImageVector = Icons.TwoTone.Air,
       labelText = weatherDataState.data.current!!.let {
-        "${it.windDir} ${it.windKph!!.roundToLong()} km/h"
+        "${it.windKph!!.roundToLong()} km/h ${it.windDir}"
       },
       secondaryLabelText = stringResource(R.string.text_general_wind_speed)
     )

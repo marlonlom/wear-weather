@@ -2,7 +2,7 @@
 <resources>
   <string name="text_allow_location_permission">Permitir permiso de ubicación para obtener el clima preciso para usted.</string>
   <string name="text_check_settings">Verificar configuración</string>
-  <string name="text_weather_feels_like">Feels like</string>
+  <string name="text_weather_feels_like">Sens. térmica</string>
   <string name="text_general_retry">Reintentar</string>
   <string name="text_general_humidity">Humedad</string>
   <string name="text_general_wind_speed">Vel. viento</string>

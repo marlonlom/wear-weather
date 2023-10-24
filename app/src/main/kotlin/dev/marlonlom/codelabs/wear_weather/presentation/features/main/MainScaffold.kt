@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
@@ -23,6 +24,7 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
+import dev.marlonlom.codelabs.wear_weather.R
 import dev.marlonlom.codelabs.wear_weather.presentation.features.location.AskingCurrentLocationScreen
 import dev.marlonlom.codelabs.wear_weather.presentation.features.location.UserLocationState
 import dev.marlonlom.codelabs.wear_weather.presentation.features.weather.openAppSettingsChipItem
@@ -80,7 +82,7 @@ fun MainScaffold(
                 .fillMaxWidth()
                 .paddingFromBaseline(top = 40.dp, bottom = 20.dp)
                 .padding(horizontal = 10.dp),
-              text = "Failed to get location.\nCheck permissions for getting current location",
+              text = stringResource(R.string.text_general_failed_getting_location),
               textAlign = TextAlign.Center,
               style = MaterialTheme.typography.caption2
             )
@@ -104,7 +106,7 @@ fun MainScaffold(
                     .fillMaxWidth()
                     .paddingFromBaseline(top = 40.dp, bottom = 20.dp)
                     .padding(horizontal = 10.dp),
-                  text = "Failed to display current weather",
+                  text = stringResource(R.string.text_general_failed_getting_weather),
                   textAlign = TextAlign.Center,
                   style = MaterialTheme.typography.caption2,
                 )
@@ -128,7 +130,7 @@ fun MainScaffold(
                     .fillMaxWidth()
                     .paddingFromBaseline(top = 40.dp, bottom = 20.dp)
                     .padding(horizontal = 10.dp),
-                  text = "No weather to display",
+                  text = stringResource(R.string.text_general_no_weather),
                   textAlign = TextAlign.Center,
                   style = MaterialTheme.typography.caption2,
                 )

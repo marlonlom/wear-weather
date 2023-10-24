@@ -11,6 +11,9 @@
   <string name="text_general_precipitation">Precipitation</string>
   <string name="text_general_wind_gust">Wind gust</string>
   <string name="text_general_uv_index">UV index</string>
+  <string name="text_general_no_weather">No weather to display</string>
+  <string name="text_general_failed_getting_weather">Failed to display current weather</string>
+  <string name="text_general_failed_getting_location">Failed to get location.\nCheck permissions for getting current location</string>
   <string-array name="texts_uv_indexes">
     <item>Low</item>
     <item>Moderate</item>

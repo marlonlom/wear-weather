@@ -11,6 +11,9 @@
   <string name="text_general_precipitation">Precipitación</string>
   <string name="text_general_wind_gust">Ráfaga de viento</string>
   <string name="text_general_uv_index">Índice UV</string>
+  <string name="text_general_no_weather">No hay clima para mostrar</string>
+  <string name="text_general_failed_getting_weather">No se pudo mostrar el clima actual</string>
+  <string name="text_general_failed_getting_location">No se pudo obtener la ubicación.\nVerifique los permisos para obtener la ubicación actual</string>
   <string-array name="texts_uv_indexes">
     <item>Bajo</item>
     <item>Moderado</item>

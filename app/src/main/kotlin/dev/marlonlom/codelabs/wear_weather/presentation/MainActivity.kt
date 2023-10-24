@@ -9,10 +9,13 @@ package dev.marlonlom.codelabs.wear_weather.presentation
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -44,6 +47,7 @@ import dev.marlonlom.codelabs.wear_weather.presentation.network.WeatherApiClient
 import dev.marlonlom.codelabs.wear_weather.presentation.network.WeatherApiRepository
 import dev.marlonlom.codelabs.wear_weather.presentation.network.WeatherApiUiState
 import dev.marlonlom.codelabs.wear_weather.presentation.theme.WearWeatherTheme
+
 
 private val Context.dataStore by preferencesDataStore("wear_weather_preferences")
 
@@ -130,10 +134,24 @@ class MainActivity : ComponentActivity() {
               locationPermissionLauncher.launch(locationPermissions)
             }
           },
+          openAppSettingsAction = {
+            openAppSettings()
+          },
+          getCurrentWeatherAction = {
+            getCurrentLocation()
+          },
           weatherDataState = weatherDataState.value,
         )
       }
+    }
+  }
 
+  private fun openAppSettings() {
+    Log.d("[MainActivity]", "openAppSettings")
+    Intent().also { intent ->
+      intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+      intent.data = Uri.fromParts("package", packageName, null)
+      startActivity(intent)
     }
   }
 

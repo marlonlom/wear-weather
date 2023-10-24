@@ -1,5 +1,6 @@
 package dev.marlonlom.codelabs.wear_weather.presentation.network
 
+import androidx.compose.ui.text.intl.Locale
 import dev.marlonlom.codelabs.wear_weather.BuildConfig
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -12,6 +13,7 @@ interface WeatherApiService {
   suspend fun getCurrentWeather(
     @Query("q") query: String,
     @Query("aqi") aqi: String = "no",
+    @Query("lang") language: String = Locale.current.language,
     @Query("key") apiKey: String = BuildConfig.WEATHER_API_KEY
   ): WeatherApiData
 }

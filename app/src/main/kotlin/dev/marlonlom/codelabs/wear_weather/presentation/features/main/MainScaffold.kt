@@ -2,14 +2,23 @@ package dev.marlonlom.codelabs.wear_weather.presentation.features.main
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -33,6 +42,7 @@ import dev.marlonlom.codelabs.wear_weather.presentation.features.weather.weather
 import dev.marlonlom.codelabs.wear_weather.presentation.features.weather.weatherDetailsBox
 import dev.marlonlom.codelabs.wear_weather.presentation.features.weather.weatherPlaceTextItem
 import dev.marlonlom.codelabs.wear_weather.presentation.network.WeatherApiUiState
+import kotlinx.coroutines.launch
 
 @Composable
 fun MainScaffold(
@@ -42,8 +52,26 @@ fun MainScaffold(
   getCurrentWeatherAction: () -> Unit,
   weatherDataState: WeatherApiUiState
 ) {
+  val focusRequester: FocusRequester = remember { FocusRequester() }
   val scalingLazyListState: ScalingLazyListState = rememberScalingLazyListState()
+  val coroutineScope = rememberCoroutineScope()
+
+  LaunchedEffect(Unit) {
+    focusRequester.requestFocus()
+  }
+
   Scaffold(
+    modifier = Modifier
+      .fillMaxSize()
+      .background(MaterialTheme.colors.surface)
+      .onRotaryScrollEvent {
+        coroutineScope.launch {
+          scalingLazyListState.scrollBy(it.verticalScrollPixels)
+        }
+        true
+      }
+      .focusRequester(focusRequester)
+      .focusable(),
     timeText = {
       if (!scalingLazyListState.isScrollInProgress) {
         TimeText()

@@ -52,26 +52,11 @@ fun MainScaffold(
   getCurrentWeatherAction: () -> Unit,
   weatherDataState: WeatherApiUiState
 ) {
-  val focusRequester: FocusRequester = remember { FocusRequester() }
   val scalingLazyListState: ScalingLazyListState = rememberScalingLazyListState()
-  val coroutineScope = rememberCoroutineScope()
-
-  LaunchedEffect(Unit) {
-    focusRequester.requestFocus()
-  }
-
   Scaffold(
     modifier = Modifier
       .fillMaxSize()
-      .background(MaterialTheme.colors.surface)
-      .onRotaryScrollEvent {
-        coroutineScope.launch {
-          scalingLazyListState.scrollBy(it.verticalScrollPixels)
-        }
-        true
-      }
-      .focusRequester(focusRequester)
-      .focusable(),
+      .background(MaterialTheme.colors.surface),
     timeText = {
       if (!scalingLazyListState.isScrollInProgress) {
         TimeText()
@@ -80,10 +65,25 @@ fun MainScaffold(
     vignette = { Vignette(VignettePosition.TopAndBottom) },
     positionIndicator = { PositionIndicator(scalingLazyListState) }
   ) {
+    val focusRequester: FocusRequester = remember { FocusRequester() }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+      focusRequester.requestFocus()
+    }
+
     ScalingLazyColumn(
       modifier = Modifier
         .fillMaxWidth()
-        .background(MaterialTheme.colors.surface),
+        .background(MaterialTheme.colors.surface)
+        .onRotaryScrollEvent {
+          coroutineScope.launch {
+            scalingLazyListState.scrollBy(it.verticalScrollPixels)
+          }
+          true
+        }
+        .focusRequester(focusRequester)
+        .focusable(),
       contentPadding = PaddingValues(horizontal = 10.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center,
